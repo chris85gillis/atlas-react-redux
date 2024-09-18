@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
-import exampleReducer from './slices/listsSlice.ts';
+import listsReducer from './slices/listsSlice';
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
-    example: exampleReducer, // Add your slices here
-  },
+    lists: listsReducer,
+  }
 });
 
-export default store;
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
