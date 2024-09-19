@@ -1,4 +1,5 @@
 import List from './List';
+import NewCardForm from './NewCardForm';
 
 const Board = ({ lists }: { lists: { title: string; cards: { title: string; description: string }[] }[] }) => {
   return (
@@ -7,6 +8,7 @@ const Board = ({ lists }: { lists: { title: string; cards: { title: string; desc
         {lists.map((list, index) => (
           <List key={index} title={list.title} cards={list.cards} />
         ))}
+        <NewCardForm />
       </div>
     </div>
   );
