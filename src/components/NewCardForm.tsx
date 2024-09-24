@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { nanoid } from 'nanoid';
+import { addCardToList } from '../slices/listsSlice';
 
-const NewCardForm: React.FC = () => {
+interface NewCardFormProps {
+  listId: string;
+}
+
+const NewCardForm: React.FC<NewCardFormProps> = ({ listId }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const dispatch = useDispatch();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Create card with title: ${title} and description: ${description}`);
-    setTitle(''); // Clear title input after submission
-    setDescription(''); // Clear description input after submission
+
+    if (title && description) {
+      // Generate a unique card ID
+      const cardId = nanoid();
+
+      // Dispatch the action to add the card to the correct list
+      dispatch(addCardToList({ listId, cardId, title, description }));
+
+      // Clear the form after saving
+      setTitle('');
+      setDescription('');
+    }
   };
 
   return (

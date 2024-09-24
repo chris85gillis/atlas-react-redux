@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { nanoid } from 'nanoid';
 
+interface Card {
+  id: string;
+  title: string;
+  description: string;
+}
+
 interface List {
   id: string;
   title: string;
@@ -9,10 +15,12 @@ interface List {
 
 interface ListsState {
   lists: List[];
+  cards: { [key: string]: Card };
 }
 
 const initialState: ListsState = {
-  lists: []
+  lists: [],
+  cards: {}
 };
 
 const listsSlice = createSlice({
@@ -30,19 +38,37 @@ const listsSlice = createSlice({
     deleteList: (state, action: PayloadAction<string>) => {
       state.lists = state.lists.filter(list => list.id !== action.payload);
     },
-    addCardToList: (state, action: PayloadAction<{ listId: string, cardId: string }>) => {
-      const { listId, cardId } = action.payload;
+    addCardToList: (state, action: PayloadAction<{ listId: string; cardId: string; title: string; description: string }>) => {
+      const { listId, cardId, title, description } = action.payload;
+
+      // Add card to the global cards object
+      state.cards[cardId] = { id: cardId, title, description };
+
+      // Find the list and add the card ID to the list's cardIds array
       const list = state.lists.find(list => list.id === listId);
       if (list) {
         list.cardIds.push(cardId);
       }
     },
+    removeCardFromList: (state, action: PayloadAction<{ listId: string; cardId: string }>) => {
+      const { listId, cardId } = action.payload;
+
+      // Remove the card from the list's cardIds array
+      const list = state.lists.find(list => list.id === listId);
+      if (list) {
+        list.cardIds = list.cardIds.filter(id => id !== cardId);
+      }
+
+      // Remove the card data from the cards object
+      delete state.cards[cardId];
+    },
     clearBoard: (state) => {
       state.lists = [];
+      state.cards = {};
     }
   }
 });
 
-export const { addList, deleteList, addCardToList, clearBoard } = listsSlice.actions;
+export const { addList, deleteList, addCardToList, removeCardFromList, clearBoard } = listsSlice.actions;
 
 export default listsSlice.reducer;
